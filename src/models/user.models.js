@@ -102,3 +102,13 @@ userSchema.methods.generateRefreshToken = function(){
 }
 
 export const Users = mongoose.model('Users', userSchema); // Exporting the model with the name Users "const" is must 
+
+
+
+
+
+
+
+
+
+
