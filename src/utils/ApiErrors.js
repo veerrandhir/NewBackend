@@ -2,7 +2,7 @@
 // and send the error message to the client
 
 
-class ApiErorr extends Error { // we extend the Error class to create our own custom error class with constructor
+class ApiError extends Error { // we extend the Error class to create our own custom error class with constructor
   constructor(message = "somethig went wrong", 
     statuscode,
     errors = [] , // it pass the error array to the constructor
