@@ -1,14 +1,15 @@
 //It create a mehod to handle async function and export it to be used in other files .
 //It is used to handle async function in a better way and avoid try catch block in every async function.
-
-const { Promise } = require("mongoose")
-
+ import {mongoose} from "mongoose" // we import mongoose to use it in async function
 // we use pormise to handle async function in a better way
 
-const asyncHandler = (fn) => (req, res, next) => {
+const asyncHandler = (fn) => {
+     //While runing Db error as it is a higher order fn we need to return it Otherwise it will not work
+     
+     return (req, res, next) => {
      Promise.resolve(fn(req, res, next)).catch((err)=> next(err)) // passed error and call next function
 }
-
+}
 export { asyncHandler } // we export the asyncHandler function to be used in other files 
 
 
@@ -34,3 +35,4 @@ export { asyncHandler } // we export the asyncHandler function to be used in oth
 // }
 
 // export { asyncHandler } // we export the asyncHandler function to be used in other files
+export default mongoose

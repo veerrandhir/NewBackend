@@ -21,6 +21,19 @@ app.use(express.static("public")); // it is used to serve the static files like 
 
 app.use(cookieParser()); // it is used to parse the cookie and get the data from the cookie and sometimes we have to set the cookie also into user browser.
 
+//Routes import in many files we import it as segrigation 
+
+import userRouter from './routes/user.routes.js';
+
+// routes declaration 
+// app.get() earlier we use bacause express and routes were decleared on same file now we decleared route and imported it
+// app.use("/users", userRouter) .. ==> it is not standered prectice
+// standered practice
+app.use("/api/v1/user", userRouter) // suppose we are defining api   
+// http://localhost:8000/api/v1/user/register //"If we replace /register with another like /login it will change the page"
+
+
+
 
 
 // export default app; // export the instance of express
