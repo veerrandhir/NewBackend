@@ -32,7 +32,7 @@ const userSchema = new Schema(
       required: true,
     },
     coverImage: {
-      type: string, // cloudinary image url
+      type: String, // cloudinary image url
     },
     // It is the single field which will create user model bigger.
     watchHistory: [

@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js"; // imported asyncHandler.js file
 import {ApiError} from "../utils/ApiErrors.js"
 
-import { User } from "../controllers/user.controllers.js"
+import {User} from "../models/user.models.js"
 
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
