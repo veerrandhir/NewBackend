@@ -13,7 +13,7 @@ router.route("/register").post( // here we call upload form multer
             maxCount:1
         },
         {
-            name:"covorImage",
+            name:"coverImage",
             maxCount:1
         }
     ]) // now we can send images

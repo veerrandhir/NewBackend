@@ -32,7 +32,7 @@ const registerUser = asyncHandler( async (req , res) =>{
     // The some() method executes the callback function once for each array element.
     if (
         [fullName,email,username,password].some((field) =>
-        field?.trim()=== "") // agar field hai to trim kro and uske baad bhi wo empty hai to true retirn hoga ye sabpe hoga
+        field?.trim()=== "") // agar field hai to trim kro and uske baad bhi wo empty hai to true return hoga ye sabpe hoga
     ) {
         throw new ApiError(400 , "All fields are required")
     }
@@ -44,14 +44,14 @@ const registerUser = asyncHandler( async (req , res) =>{
 
     // step:3 check for existing user
     // now we call User and find in db for given email or username
-    const existedUser = User.findOne({
-        $or:[{username},{email}] // $sign gives us various operator to check multiple values at a time so we use it here we can siplpy use like this = User.findOne({email}) to check only one
-    })
-
-    if(existedUser){
-        throw new ApiError(409, "username or password already exist")
+    const existedUser = await User.findOne({
+        $or: [{ username: username }, { email: email }] // Explicitly specify field-value pairs
+    });
+    
+    if (existedUser) {
+        throw new ApiError(409, "username or email already exists");
     }
-
+    
     // we have defined middleware in routes it and till then we get all data in req.body , so middleware add more fields in request 
     // We have already difined multer and saved so call it and get the path ? to check error or give options ( "?" says agar file hai to ye karo )
     const avatarLocalPath =  req.files?.avatar[0]?.path;
@@ -66,7 +66,7 @@ const registerUser = asyncHandler( async (req , res) =>{
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if(!avatar){
-        throw new ApiError(400,"Avatar fils is required")
+        throw new ApiError(401,"Avatar fils is required")
 
     }
 
@@ -78,7 +78,6 @@ const registerUser = asyncHandler( async (req , res) =>{
         avatar: avatar.url, // we need just url because it is uploaded on cloud
         coverImage: coverImage?.url || "",// agar hai to lo nhi to empty 
         email,
-        passowrd,
         username: username.toLowerCase(),
     })
     // If we don't want some field to show publically we can use this method db give each user a unique id we can use findById to find that particular user and use select method
