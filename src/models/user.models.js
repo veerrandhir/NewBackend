@@ -7,11 +7,11 @@ import bcrypt from "bcrypt"; // Importing bcrypt for hashing the password used f
 // Creating a new schema for user
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
+    username: {   
+      type: String,   
+      required: true,   
+      unique: true,   
+      lowercase: true,   
       trim: true,
       index: true, // it helps to search the data faster but it will take more space may be expensive.
     },
@@ -46,7 +46,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"], // we can add custom message in array
     },
-    refreshTocken: {
+    refreshToken: {
       type: String,
     },
   },

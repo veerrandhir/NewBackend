@@ -10,8 +10,11 @@ const storage = multer.diskStorage({
     
     cb(null, file.originalname) // we can update username or customize file name here.
     }
+    
   })
+
   
+
 export const upload = multer({ 
     storage, })
 // upload get imported into routes 

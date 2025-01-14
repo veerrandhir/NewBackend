@@ -1,6 +1,8 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controllers.js";
+import { loginUser, registerUser ,logoutUser} from "../controllers/user.controllers.js";
 import {upload} from "../middlewares/multer.middleware.js"
+import { verifyJWT } from "../middlewares/auth.middleware.js"
+
 
 
 
@@ -20,5 +22,11 @@ router.route("/register").post( // here we call upload form multer
     ,
     registerUser)
 // router.route("/login").post(login) // after that just we don't need to change in app.js just change here or decleare new page here and rest will change
+
+router.route("/login").post(loginUser)
+
+// secured routes
+router.route("/logout").post(verifyJWT, logoutUser) // before we logout we check userlogin through verifyJWT , That's why we use next it redirect to new method after executions
+
 
 export default router
