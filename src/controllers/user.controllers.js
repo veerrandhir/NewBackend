@@ -7,6 +7,9 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 import {ApiResponse} from "../utils/ApiResponse.js"
 
+import jwt from "jsonwebtoken"
+
+
 const generateAccessTokenRefreshTokens = async(userId) => {
     try { // we are using trycatch here to handle error
         const user = await User.findById(userId) // we get userId for generating token
@@ -224,14 +227,69 @@ const logoutUser = asyncHandler(async(req, res)=>{
     }
     return res
     .status(200)
-    .clearCookie("accessToken",options)
-    .clearCookie("refreshToken",options)
+    .clearCookies("accessToken",options)
+    .clearCookies("refreshToken",options)
     .json(new ApiResponse(200, {}, "User logged out"))
 
+})
+
+
+// See accessToken and refreshToken work in such a way user don't need to give password again and again.
+// Suppose user token is expaied then in frontend user will get error 401 so instead of receiving  passowrd from user we ask to hit an endpoint through which we can generate new token and verify it through tocken we have in DB , so that user can relogin without passord and new login session restarts withot login
+// then frontend send another refreshToken to verify that's why we need an endpoint so let's do it.
+// crate a controller
+const refreshAccessToken = asyncHandler(async (req, res) =>{
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken // if using web then get token through cookies and for mobile app use body . // actually we have user hit can end through cookies to get refreshToken . #we also have refreshToken in Db so it's incomingRfT 
+
+    if (incomingRefreshToken){
+        throw new ApiError(401,"Unauthorized request")
+    }
+  try {
+      const decodedToken = jwt.verify( // se get endoded token but we need row original token so jwt verify it and gives us
+          incomingRefreshToken,
+          process.env.REFRESH_TOKEN_SECRET 
+      )
+      const user = await User.findById(decodedToken?._id)
+      if (!user){
+          throw new ApiError(401,"Invalid refreshToken")
+      }
+      // Now we need to chech refreshToken receiving from user and refreshToken we have both should same 
+      if(incomingRefreshToken !== user?.refreshToken){
+          throw new ApiError(401,"Refresh token is expired or used")
+  
+      }
+      // Create options and genereateAccessRefreshToken because we need to give encoded token
+  
+      const options = {
+          httpOnly: true,
+          secure:true
+      }
+  // our accessToken value is same but refreshToken has new Val so we used var "newRefreshToken"
+      const {accessToken , newRefreshToken} = await generateAccessTokenRefreshTokens(user._id)
+      // then send return status and cookies
+  
+      return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+          new ApiResponse(
+              200,
+              {accessToken, refreshToken:newRefreshToken},
+              "Access Token Refreshed Successfully"
+  
+          )
+      )
+  
+  
+  } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid refresh token")
+  }
 })
 
 export {
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
 }

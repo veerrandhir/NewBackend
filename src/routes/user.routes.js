@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, registerUser ,logoutUser} from "../controllers/user.controllers.js";
+import { loginUser, registerUser ,logoutUser, refreshAccessToken } from "../controllers/user.controllers.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
@@ -28,5 +28,6 @@ router.route("/login").post(loginUser)
 // secured routes
 router.route("/logout").post(verifyJWT, logoutUser) // before we logout we check userlogin through verifyJWT , That's why we use next it redirect to new method after executions
 
+router.route("/refresh-token").post(refreshAccessToken)
 
 export default router
