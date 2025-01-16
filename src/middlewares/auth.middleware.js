@@ -4,7 +4,7 @@
 import { ApiError } from "../utils/ApiErrors.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
-import { User } from "../models/user.models.js";
+import { User } from "../models/user.model.js";
 
 // when we write middleware we need req, res, next and error . next give access to take it where it required.
 export const verifyJWT = asyncHandler(async(req, res, next) =>{
