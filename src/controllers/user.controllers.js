@@ -241,7 +241,7 @@ const logoutUser = asyncHandler(async(req, res)=>{
 const refreshAccessToken = asyncHandler(async (req, res) =>{
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken // if using web then get token through cookies and for mobile app use body . // actually we have user hit can end through cookies to get refreshToken . #we also have refreshToken in Db so it's incomingRfT 
 
-    if (incomingRefreshToken){
+    if (!incomingRefreshToken){
         throw new ApiError(401,"Unauthorized request")
     }
   try {
