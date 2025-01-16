@@ -26,7 +26,8 @@ router.route("/register").post( // here we call upload form multer
 router.route("/login").post(loginUser)
 
 // secured routes
-router.route("/logout").post(verifyJWT, logoutUser) // before we logout we check userlogin through verifyJWT , That's why we use next it redirect to new method after executions
+router.route("/logout").post(verifyJWT, logoutUser) // before we logout we check userlogin through verifyJWT , That's why we use next it redirect to new method after executions ,jwt act as multer
+
 
 router.route("/refresh-token").post(refreshAccessToken)
 
