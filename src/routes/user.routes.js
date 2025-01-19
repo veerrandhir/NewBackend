@@ -50,7 +50,7 @@ router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 // we will use second middleware "upload"
 router
   .route("/avatar")
-  .patch(verifyJWT, upload.single("/avatar"), updateUserAvatar);
+  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
 
 router
   .route("/cover-image")
