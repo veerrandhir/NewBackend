@@ -8,6 +8,7 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose";
 
 
 const generateAccessTokenRefreshTokens = async(userId) => {
@@ -482,6 +483,64 @@ const getUserChannelProfile = asyncHandler(async(req, res)=>{
 })
 
 
+const getWatchHistory = asyncHandler(async(req, res)=>{
+    // we need to run nested loop here because we need watchHistory and in a user model hai two user ("user" and "owner") so then just after one lookup we call anoter one.
+    // Note: if we run "req.user._id" we get string as we intergrated mongooes in db so it returns object as string
+    const user = await User.aggregate([
+        { // first Pipenine
+            $match: { // aggregation pipeline se sare code directly jata hai  so we create mongooes objectId 
+                _id: new mongoose.Types.ObjectId(req.user._id)  // Note: if we run "req.user._id" we get string as we intergrated mongooes in db so it returns object as string
+            }
+        },
+        {
+            $lookup: {
+                from: "videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                // here we need use pipeline to nested and get object id 
+                pipeline:[
+                    {
+                        $lookup: {
+                            form: "users",
+                            foreignField: "_id",
+                            localField: "owner",
+                            as: "owner",
+                            // Actuall we here we get multiple values and we don't need that so we furter use a pipeline to project and filter them what we need will be selected here
+                            pipeline: [
+                                {
+                                    $project:{
+                                        fullName : 1,
+                                        username:1,
+                                        avatar:1  
+                                    }
+                                }
+                            ]
+                        }
+                    }, // Actually this is an additinal step as frontend get array and for his convenience we have used this step to convert into object
+                    {
+                        $addFields:{
+                            owner:{
+                                $first: "$owner" // First is use to extract out first element of an array
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,
+            user[0].watchHistory,
+            "Watch history fetched successfully"
+
+        )
+    )
+})
+
 export {
     registerUser,
     loginUser,
@@ -493,5 +552,5 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    channel
+    getWatchHistory
 }
