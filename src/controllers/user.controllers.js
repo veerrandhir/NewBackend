@@ -357,7 +357,7 @@ const updateUserAvatar = asyncHandler(async(req, res) =>{
         {new:true}
     ).select("-password")
 
-    return reset
+    return res
     .status(200)
     .json(
         new ApiResponse(200, user, "avatar Updated")
@@ -389,13 +389,98 @@ const updateUserCoverImage = asyncHandler(async(req, res) =>{
         {new:true}
     ).select("-password")
 
-    return reset
+    return res
     .status(200)
     .json(
         new ApiResponse(200, user, "coverImage Updated")
     )
 
 })
+
+const getUserChannelProfile = asyncHandler(async(req, res)=>{
+    //Listen when we req profile of any channel we usually visti channel url so we use "params" here to get form url
+    const {username} = req.params // destructered and taken username
+
+    if(!username?.trim()){
+        throw new ApiError(400, "Username is missing")
+    }
+
+    // I am thinking to find User by "findbyId " or"find 
+    // like "User.find({username})" This is a good approach but problem is that we get user from db and after that apply aggregation on the basic of id no need to do this all
+    const channel = await User.aggregate([ //Creating first pipeline
+        {
+            $match:{ // we have match field who find one doc from all docs.
+                username: username?.toLowerCase()
+
+            },
+        },
+        {    
+            // now we have one document on basic of we need to lookup how much subscribers specific channel have
+            $lookup: {
+                from:  "subscriptions", // in User model every thing converted in plural and in small case ref: usermodelSchema
+                localField:"_id",
+                foreignField : "channel",
+                as : "subscribers"
+                // "now we have created first pipeline through which we find our subscribers and later count it"
+            }
+        },
+        {// now we find how many channel user have subscribed
+            $lookup :{
+                from: "subscriptions",
+                localField: "_id",
+                foreignField:"subscriber",
+                as:"subscribedTo"
+            }
+        },
+        {
+            // now we have two pipelines and now we need to add these 
+            $addFields : {
+                // this keep the files and create an additional field and send all data
+                subscribersCount:{ //Now we need to calculate "subscribers " from first pipeline
+                    $size : "$subscribers" // now "subscribers" is a field so we add $ and it count the size of field passed to it
+                },
+                channelsSubscribedToCount : {
+                    $size :"$subscribedTo"
+                },
+                isSubscribed:{
+                    // Now we have to check we for subscribe button and use a field condition to check 
+                    $cond:{ // condition have basically three parameters If, Then or Else
+                        if:{$in:[req.user?._id, "$subscribers.subscriber"]}, // in is operator check in both array and objects so we no need to worry we can use same syntax in both case . also we need to look in subscribers fields that subscribed or not 
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        { // now we use project :"It gives projections and only gives selected fields which is required"
+            $project:{
+                fullName : 1,
+                username : 1,
+                subscribersCount :1,
+                channelsSubscribedToCount :1,
+                isSubscribed :1,
+                avatar :1,
+                coverImage :1,
+                email:1
+
+
+
+            }
+        }
+    ]) 
+    if (!channel?.length){
+        throw new ApiError("Channel does not exists" )
+    }
+    return res
+    .status(200)
+    .json( // if channel exist send json response and return channel we may return all object or only one it depends on us.
+        new ApiResponse(200, channel[0],"User channel fetched successfully")
+    )
+    
+    
+    
+})
+
 
 export {
     registerUser,
@@ -406,5 +491,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    channel
 }
