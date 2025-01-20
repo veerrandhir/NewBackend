@@ -15,8 +15,8 @@ const generateAccessTokenRefreshTokens = async(userId) => {
     try { // we are using trycatch here to handle error
         const user = await User.findById(userId) // we get userId for generating token
          // always remember when we need user form Database like mongodb we use "User" and for "user" for self defined
-         const accessToken = user.generateRefreshToken() //Extracted Or call from user.model and hold in var
-         const refreshToken = user.generateAccessToken()
+         const refreshToken = user.generateRefreshToken() //Extracted Or call from user.model and hold in var
+         const accessToken = user.generateAccessToken()
 
          // listen actually we provide accessToken to user but keep refreshToken so that user should not input passowrd again and again,// now we need to add it to userDB which is quite simple
          // And we have user access through which we get access of all us
@@ -28,9 +28,10 @@ const generateAccessTokenRefreshTokens = async(userId) => {
 
 
     } catch (error) {  
-        throw new ApiError(500, "Sommethinf went wrong while Generating Refresh and access token")
+        throw new ApiError(500, "Something went wrong while Generating Refresh and access token")
     }
 }
+
 
 const registerUser = asyncHandler( async (req , res) =>{
     // => we have to think and breakdown steps while registering user.
@@ -235,6 +236,7 @@ const logoutUser = asyncHandler(async(req, res)=>{
 })
 
 
+
 // See accessToken and refreshToken work in such a way user don't need to give password again and again.
 // Suppose user token is expaied then in frontend user will get error 401 so instead of receiving  passowrd from user we ask to hit an endpoint through which we can generate new token and verify it through tocken we have in DB , so that user can relogin without passord and new login session restarts withot login
 // then frontend send another refreshToken to verify that's why we need an endpoint so let's do it.
@@ -246,7 +248,7 @@ const refreshAccessToken = asyncHandler(async (req, res) =>{
         throw new ApiError(401,"Unauthorized request")
     }
   try {
-      const decodedToken = jwt.verify( // se get endoded token but we need row original token so jwt verify it and gives us
+      const decodedToken = jwt.verify( // se get embaded token but we need row original token so jwt verify it and gives us
           incomingRefreshToken,
           process.env.REFRESH_TOKEN_SECRET 
       )
