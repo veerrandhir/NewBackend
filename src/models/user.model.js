@@ -75,7 +75,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this.id,
       email: this.email,
-      username: this.userName,
+      username: this.username,
       fullName: this.fullName,
     }, // it require two things payload and secret key
     process.env.ACCESS_TOKEN_SECRET, //it req the secret key because on which basis the tocken will be generated
