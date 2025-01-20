@@ -12,10 +12,10 @@ app.use(cors({
 }))
 // step 4 -> Get the data from the cookie but we get data form json body entries and url and DB and if there is no limit server may crash
 
-app.use(express.json({limit : "16kb"})); // it is used to get the data from the json body entries and we set the limit of the data that we can get from the body
+app.use(express.json({limit : "200kb"})); // it is used to get the data from the json body entries and we set the limit of the data that we can get from the body
 
 // when we get data form url we can get the data in the form of key value pairs so we should configure the urlencoded
-app.use(express.urlencoded({extended: true , limit :"16kb"})); // it is used to get the data from the url in the form of key value pairs.
+app.use(express.urlencoded({extended: true , limit :"200kb"})); // it is used to get the data from the url in the form of key value pairs.
 
 app.use(express.static("public")); // it is used to serve the static files like images, css, js files in public folder
 
