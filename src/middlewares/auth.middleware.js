@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/user.model.js";
 
 // when we write middleware we need req, res, next and error . next give access to take it where it required.
-export const verifyJWT = asyncHandler(async(req, res, next) =>{
+export const verifyJWT = asyncHandler(async(req, _, next) =>{
     // now we need to get accessToken but how ? Actually we have access of req and it has cookies 
     // If check if we have cookies or not using ? 
     try {
