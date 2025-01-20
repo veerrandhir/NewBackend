@@ -17,7 +17,7 @@ connectDB() // DB comnnection is done here
         }); 
     })
     .catch((error) => {
-        console.error("ERROR: MONGODB connection error ", error);
+        console.log("ERROR: MONGODB connection error ", error);
         // process.exit(1); "Not in use right now Debugging"
     });
 
