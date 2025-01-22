@@ -1,20 +1,18 @@
-import multer from "multer";
+import multer from 'multer';
+import path from 'path';
 
-
+// Set up storage engine
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-    cb(null, './public/temp') // cb is a call back fn 
-
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-    
-    cb(null, file.originalname) // we can update username or customize file name here.
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-    
-  })
+});
 
-  
-
+// Initialize upload
 export const upload = multer({ 
-    storage, })
-// upload get imported into routes 
+    storage, 
+});
+// upload get imported into routes
